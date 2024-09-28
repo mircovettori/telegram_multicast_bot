@@ -34,7 +34,7 @@ export class AuthService {
     };
   }
 
-  isPasswordValid(password: string): boolean {
+  private isPasswordValid(password: string): boolean {
     if(password.length < 6)
         return false
     if(!/[A-Z]/.test(password))
@@ -51,14 +51,14 @@ export class AuthService {
   async signIn(
     username: string,
     pass: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ token: string }> {
     const user = this.usersService.findOne(username);
     if (user?.password !== pass) {
       throw new UnauthorizedException("Cannot login with provided credentials");
     }
     const payload = { sub: user.userId, username: user.username };
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      token: await this.jwtService.signAsync(payload),
     };
   }
 }
