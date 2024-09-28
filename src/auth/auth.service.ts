@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -9,13 +9,52 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
+  async signUp(
+    username: string,
+    password: string,
+    password2: string
+  ): Promise<{ result: string, errors?: string[] }> {
+    var errors: string[] = []
+    if(this.usersService.findOne(username))
+        errors.push("Already exists a user with this username")
+    if(password !== password2)
+        errors.push("Passwords mismatch")
+    if(!this.isPasswordValid(password)) 
+        errors.push("Passwords must follow the next rules: Minimum 6 characters, at least one uppercase letter, one lowercase letter, one number and one special character")
+    if(errors.length !== 0)
+        throw new BadRequestException(
+            {
+                result: "Error creating the user",
+                errors
+            }
+        )
+    const user = this.usersService.insertOne(username, password);
+    return {
+      result: "User successfully created.",
+    };
+  }
+
+  isPasswordValid(password: string): boolean {
+    if(password.length < 6)
+        return false
+    if(!/[A-Z]/.test(password))
+        return false
+    if(!/[a-z]/.test(password))
+        return false
+    if(!/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(password))
+        return false
+    if(!/\d/.test(password))
+        return false
+    return true
+  }
+
   async signIn(
     username: string,
     pass: string,
   ): Promise<{ access_token: string }> {
-    const user = await this.usersService.findOne(username);
+    const user = this.usersService.findOne(username);
     if (user?.password !== pass) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("Cannot login with provided credentials");
     }
     const payload = { sub: user.userId, username: user.username };
     return {
