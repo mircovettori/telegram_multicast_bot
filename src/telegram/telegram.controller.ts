@@ -8,7 +8,7 @@ import { ResponseDto } from 'src/auth/dto/response.dto';
 export class TelegramController {
     constructor(private telegramService: TelegramService) {}
 
-//   @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('send_message')
   @UseInterceptors(FileInterceptor('image'))
