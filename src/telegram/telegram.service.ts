@@ -59,6 +59,21 @@ export class TelegramService {
         const httpsAgent = new https.Agent({
             rejectUnauthorized: false
           })
-        return this.httpService.post("https://api.telegram.org/bot7309366684:AAECrqPwlEEUMJ59lr3apUce2trjiELrdaM/sendPhoto", {chat_id: process.env.CHAT_ID, photo: image.stream}, {httpsAgent})
+        var FormData = require("form-data");
+        const formData = new FormData();
+        formData.append('photo', image.buffer, { filename: image.originalname });
+        formData.append('chat_id', process.env.CHAT_ID)
+        const headers = {
+            ...formData.getHeaders(),
+            "Content-Length": formData.getLengthSync()
+        };
+        return this.httpService.post(
+            "https://api.telegram.org/bot7309366684:AAECrqPwlEEUMJ59lr3apUce2trjiELrdaM/sendPhoto",
+            formData,
+            {
+                headers, 
+                httpsAgent
+            }
+        )
     }
 }
