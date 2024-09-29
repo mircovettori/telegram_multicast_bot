@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { ResponseDto } from './dto/response.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
     username: string,
     password: string,
     password2: string
-  ): Promise<{ result: string, errors?: string[] }> {
+  ): Promise<ResponseDto> {
     var errors: string[] = []
     if(this.usersService.findOne(username))
         errors.push("Already exists a user with this username")
@@ -23,13 +24,13 @@ export class AuthService {
         errors.push("Passwords must follow the next rules: Minimum 6 characters, at least one uppercase letter, one lowercase letter, one number and one special character")
     if(errors.length !== 0)
         throw new BadRequestException(
-            {
+            <ResponseDto>{
                 result: "Error creating the user",
                 errors
             }
         )
     const user = this.usersService.insertOne(username, password);
-    return {
+    return <ResponseDto>{
       result: "User successfully created.",
     };
   }
