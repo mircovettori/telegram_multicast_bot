@@ -52,13 +52,13 @@ export class TelegramService {
         const httpsAgent = new https.Agent({
             rejectUnauthorized: false
           })
-        return this.httpService.post("https://api.telegram.org/bot7309366684:AAECrqPwlEEUMJ59lr3apUce2trjiELrdaM/sendMessage", {chat_id: 408920441, text}, {httpsAgent});
+        return this.httpService.post("https://api.telegram.org/bot7309366684:AAECrqPwlEEUMJ59lr3apUce2trjiELrdaM/sendMessage", {chat_id: process.env.CHAT_ID, text}, {httpsAgent});
     }
 
     private sendPhoto(image?: Express.Multer.File) {
         const httpsAgent = new https.Agent({
             rejectUnauthorized: false
           })
-        return this.httpService.post("https://api.telegram.org/bot7309366684:AAECrqPwlEEUMJ59lr3apUce2trjiELrdaM/sendPhoto", {chat_id: 408920441, photo: image.stream}, {httpsAgent})
+        return this.httpService.post("https://api.telegram.org/bot7309366684:AAECrqPwlEEUMJ59lr3apUce2trjiELrdaM/sendPhoto", {chat_id: process.env.CHAT_ID, photo: image.stream}, {httpsAgent})
     }
 }
